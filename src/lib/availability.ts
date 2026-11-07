@@ -1,3 +1,5 @@
+import type { Room } from '@/data/rooms';
+
 export type Booking = { start: number; end: number };
 
 export type CheckResult =
@@ -6,6 +8,10 @@ export type CheckResult =
   | { kind: 'invalid'; message: string };
 
 export const MAX_DURATION = 120;
+
+export function checkRoom(room: Room, startRaw: string, endRaw: string, now: number): CheckResult {
+  return canBook(startRaw, endRaw, now, room.blocked, room.bookings);
+}
 
 export function isIntegerInput(value: string): boolean {
   return value.trim() !== '' && /^-?\d+$/.test(value.trim());
