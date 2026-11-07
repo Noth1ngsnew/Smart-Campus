@@ -1,63 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Clock, DoorClosed, DoorOpen, Lock, Unlock, CalendarX, CheckCircle2, XCircle } from 'lucide-react';
-
-type Booking = { start: number; end: number };
+import { minutesToLabel } from '@/lib/time';
+import { canBook, type Booking } from '@/lib/availability';
 
 const INITIAL_NOW = 540; // 09:00
 const INITIAL_BLOCKED = false;
 const INITIAL_BOOKINGS: Booking[] = [{ start: 600, end: 660 }]; // 10:00 - 11:00
-const MAX_DURATION = 120;
-
-function minutesToLabel(min: number): string {
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-}
-
-type CheckResult =
-  | { kind: 'available' }
-  | { kind: 'unavailable'; message: string }
-  | { kind: 'invalid'; message: string };
-
-function isIntegerInput(value: string): boolean {
-  return value.trim() !== '' && /^-?\d+$/.test(value.trim());
-}
-
-function canBook(
-  startRaw: string,
-  endRaw: string,
-  now: number,
-  blocked: boolean,
-  existing: Booking[]
-): CheckResult {
-  if (!isIntegerInput(startRaw) || !isIntegerInput(endRaw)) {
-    return { kind: 'invalid', message: 'Enter whole numbers only' };
-  }
-
-  const start = parseInt(startRaw, 10);
-  const end = parseInt(endRaw, 10);
-
-  if (start < 0 || end > 1440) {
-    return { kind: 'invalid', message: 'Times must be between 0 and 1440' };
-  }
-  if (start >= end) {
-    return { kind: 'invalid', message: 'End must be after start' };
-  }
-  if (start <= now) {
-    return { kind: 'unavailable', message: 'Start must be after the current time.' };
-  }
-  if (end - start > MAX_DURATION) {
-    return { kind: 'unavailable', message: 'Maximum duration is 120 minutes.' };
-  }
-  if (blocked) {
-    return { kind: 'unavailable', message: 'Room is blocked' };
-  }
-  const overlaps = existing.some((b) => start < b.end && b.start < end);
-  if (overlaps) {
-    return { kind: 'unavailable', message: 'Overlaps an existing booking' };
-  }
-  return { kind: 'available' };
-}
 
 function StatCard({
   label,
