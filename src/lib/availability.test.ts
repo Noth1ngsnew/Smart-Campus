@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { canBook } from '@/lib/availability';
+import { canBook, MAX_DURATION } from '@/lib/availability';
 
 const NOW = 540; // 09:00
 const BOOKINGS = [{ start: 600, end: 660 }]; // 10:00-11:00
@@ -36,6 +36,10 @@ describe('AC regression: canBook', () => {
   });
   it('AC4: overlapping by one minute is rejected', () => {
     expect(canBook('599', '601', NOW, false, BOOKINGS).kind).toBe('unavailable');
+  });
+  it('AC2: message reports MAX_DURATION for over-long bookings', () => {
+    const r = canBook('700', String(700 + MAX_DURATION + 1), NOW, false, BOOKINGS);
+    expect(r).toEqual({ kind: 'unavailable', message: `Maximum duration is ${MAX_DURATION} minutes.` });
   });
   it('AC5: checking availability does not mutate bookings', () => {
     const copy = [{ start: 600, end: 660 }];
