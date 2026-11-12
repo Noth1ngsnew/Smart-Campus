@@ -41,7 +41,7 @@ export function canBook(
     return { kind: 'unavailable', message: 'Start must be after the current time.' };
   }
   if (end - start > MAX_DURATION) {
-    return { kind: 'unavailable', message: 'Maximum duration is 120 minutes.' };
+    return { kind: 'unavailable', message: `Maximum duration is ${MAX_DURATION} minutes.` };
   }
   if (blocked) {
     return { kind: 'unavailable', message: 'Room is blocked' };

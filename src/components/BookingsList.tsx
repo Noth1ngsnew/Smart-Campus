@@ -14,9 +14,9 @@ export default function BookingsList({ bookings }: { bookings: Booking[] }) {
         <p className="text-sm text-slate-500">No bookings recorded.</p>
       ) : (
         <ul className="space-y-2">
-          {bookings.map((b, i) => (
+          {bookings.map((b) => (
             <li
-              key={i}
+              key={`${b.start}-${b.end}`}
               className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
             >
               <span className="font-medium text-slate-800">
