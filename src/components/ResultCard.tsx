@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { CheckCircle2, DoorOpen, XCircle, Sparkles, Loader2 } from 'lucide-react';
 import type { CheckResult } from '@/lib/availability';
@@ -65,9 +65,16 @@ export default function ResultCard({
   const canExplain = result.kind === 'available' || result.kind === 'unavailable';
   const [explanation, setExplanation] = useState<ExplainOutput | null>(null);
   const [explaining, setExplaining] = useState(false);
+  const reqId = useRef(0);
+
+  useEffect(() => {
+    setExplanation(null);
+    reqId.current += 1;
+  }, [roomName, startRaw, endRaw, result]);
 
   const handleExplain = async () => {
     if (!canExplain || explaining) return;
+    const id = reqId.current;
     setExplaining(true);
     try {
       const out = await explainAvailability({
@@ -77,9 +84,9 @@ export default function ResultCard({
         isAvailable: result.kind === 'available',
         reasonCode: result.reasonCode,
       });
-      setExplanation(out);
+      if (id === reqId.current) setExplanation(out);
     } finally {
-      setExplaining(false);
+      if (id === reqId.current) setExplaining(false);
     }
   };
 

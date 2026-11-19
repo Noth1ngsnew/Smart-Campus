@@ -54,4 +54,38 @@ describe('UI integration', () => {
     expect(kind()).toBe('unavailable');
     expect(screen.getByTestId('result').textContent).toContain('blocked');
   });
+
+  it('E1: explanation disappears after changing the end time', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText(/^start/i), '700');
+    await user.type(screen.getByLabelText(/^end/i), '760');
+    await user.click(screen.getByRole('button', { name: /explain availability/i }));
+    await screen.findByTestId('explanation');
+    const endField = screen.getByLabelText(/^end/i);
+    await user.clear(endField);
+    await user.type(endField, '800');
+    expect(screen.queryByTestId('explanation')).toBeNull();
+  });
+
+  it('E2: explanation disappears after switching room', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText(/^start/i), '700');
+    await user.type(screen.getByLabelText(/^end/i), '760');
+    await user.click(screen.getByRole('button', { name: /explain availability/i }));
+    await screen.findByTestId('explanation');
+    const noBookings = ROOMS.find((r) => !r.blocked && r.bookings.length === 0)!;
+    await user.click(screen.getByTestId(`room-${noBookings.id}`));
+    expect(screen.queryByTestId('explanation')).toBeNull();
+  });
+
+  it('E3: the Explain button is hidden for invalid results', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText(/^start/i), '700');
+    await user.type(screen.getByLabelText(/^end/i), '600');
+    expect(kind()).toBe('invalid');
+    expect(screen.queryByRole('button', { name: /explain availability/i })).toBeNull();
+  });
 });
