@@ -51,6 +51,12 @@ describe('explain: input validation', () => {
     expect(validateInput(null)).toBe(false);
     expect(validateInput('hello')).toBe(false);
   });
+  it('rejects isAvailable false with reasonCode AVAILABLE', () => {
+    expect(validateInput({ ...validAvailable, isAvailable: false, reasonCode: 'AVAILABLE' })).toBe(false);
+  });
+  it('rejects isAvailable true with an unavailable reasonCode (BLOCKED)', () => {
+    expect(validateInput({ ...validUnavailable, isAvailable: true, reasonCode: 'BLOCKED' })).toBe(false);
+  });
 });
 
 describe('explain: output validation', () => {

@@ -44,6 +44,7 @@ export function validateInput(input: unknown): input is ExplainInput {
   if (typeof r.end !== 'number' || !Number.isInteger(r.end) || r.end < 0 || r.end > 1440) return false;
   if (typeof r.isAvailable !== 'boolean') return false;
   if (typeof r.reasonCode !== 'string' || !EXPLAINABLE_REASONS.has(r.reasonCode as ReasonCode)) return false;
+  if (r.isAvailable !== (r.reasonCode === 'AVAILABLE')) return false;
   return true;
 }
 
