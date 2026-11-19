@@ -22,11 +22,11 @@ describe('AC regression: canBook', () => {
   });
   it('AC2: rejects 121 minutes', () => {
     const r = canBook('700', '821', NOW, false, BOOKINGS);
-    expect(r).toEqual({ kind: 'unavailable', message: 'Maximum duration is 120 minutes.' });
+    expect(r).toEqual({ kind: 'unavailable', message: 'Maximum duration is 120 minutes.', reasonCode: 'MAX_DURATION' });
   });
   it('AC3: blocked room is never available', () => {
     const r = canBook('700', '760', NOW, true, []);
-    expect(r).toEqual({ kind: 'unavailable', message: 'Room is blocked' });
+    expect(r).toEqual({ kind: 'unavailable', message: 'Room is blocked', reasonCode: 'BLOCKED' });
   });
   it('AC4: touching end of existing booking is allowed', () => {
     expect(canBook('660', '720', NOW, false, BOOKINGS).kind).toBe('available');
@@ -39,7 +39,7 @@ describe('AC regression: canBook', () => {
   });
   it('AC2: message reports MAX_DURATION for over-long bookings', () => {
     const r = canBook('700', String(700 + MAX_DURATION + 1), NOW, false, BOOKINGS);
-    expect(r).toEqual({ kind: 'unavailable', message: `Maximum duration is ${MAX_DURATION} minutes.` });
+    expect(r).toEqual({ kind: 'unavailable', message: `Maximum duration is ${MAX_DURATION} minutes.`, reasonCode: 'MAX_DURATION' });
   });
   it('AC5: checking availability does not mutate bookings', () => {
     const copy = [{ start: 600, end: 660 }];

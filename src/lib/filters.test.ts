@@ -45,7 +45,7 @@ describe('F2: equipment filter', () => {
 describe('F3: blocked room', () => {
   it('is never reported as available', () => {
     const r = checkRoom(rooms[3], '700', '760', NOW);
-    expect(r).toEqual({ kind: 'unavailable', message: 'Room is blocked' });
+    expect(r).toEqual({ kind: 'unavailable', message: 'Room is blocked', reasonCode: 'BLOCKED' });
   });
 });
 
